@@ -51,17 +51,5 @@ module_keywords.update(read_module_keywords(fpath=path.join(dir_prefix, package_
 with open(path.join(dir_prefix, 'README.rst'), encoding='utf-8') as f:
     module_keywords['long_description'] = f.read()
 
-setup(
-    name=package_name,
-    packages=[package_name],
-    version=module_keywords['version'],
-    license=module_keywords['license'],
-    install_requires=module_keywords['install_requires'],
-    author=module_keywords['author'],
-    author_email=module_keywords['author_email'],
-    url=module_keywords['url'],
-    description=module_keywords['description'],
-    long_description=module_keywords['long_description'],
-    keywords=module_keywords['keywords'],
-    classifiers=module_keywords['classifiers'],
-)
+setup(**module_keywords)
+

@@ -138,8 +138,6 @@ class PkgStruct(object):
                                                unnecessary_exts=unnecessary_exts)
         return (_bn, _loc, _scr_mnemonic)
 
-
-
     @classmethod
     def set_info(cls, data={}, script_path=None, prefix=None, pkg_name=None,
                  flg_realpath=False, remove_tail_digits=True, mimic_home=True,
@@ -605,6 +603,67 @@ class PkgStruct(object):
             else:
                 _path = self.pkg_info[k]
             print ( "%-*s %s" % (tlmax+4, "'"+k+"'"':', _path))
+
+    @classmethod
+    def path_complementing(cls, filename:str, location_defalut:str, 
+                           make_parents=False, dir_permission=0o755, exist_ok=True,
+                           touch=False, permission=0o644, return_pathobj=False):
+
+        f_path = pathlib.Path(filename)
+        if ( f_path.anchor or
+             filename.startswith('.'+os.path.sep) or
+             filename.startswith('..'+os.path.sep) ):
+            f_complemented = filename
+        else:
+            f_complemented = os.path.concat(location_cand, filename)
+            f_path         = pathlib.Path(f_complemented)
+
+        if make_parents:
+            f_path.parent.mkdir(mode=dir_permission, parents=make_parents, exist_ok=exist_ok)
+        if touch:
+            f_path.touch(mode=permission, exist_ok=exist_ok)
+
+        return pathlib.Path(f_path) if return_pathobj else f_complemented
+
+    def complement(self, *args,
+                   filename:str=None,
+                   make_parents=False, dir_permission=0o755, exist_ok=True,
+                   touch=False, permission=0o644, return_pathobj=False):
+
+        if isinstance(filename, str) and filename:
+            f_name = filename
+            key    = args[0]
+            args   = args[1:]
+        elif self.is_dir_keyword(args[0]) :
+            f_name = args[-1]
+            key    = args[0]
+            args   = args[1:-1]
+        else:
+            f_name = args[0]
+            key    = args[1]
+            args   = args[2:]
+
+        f_path = pathlib.Path(f_name)
+
+        if ( f_path.anchor or  
+             f_name.startswith('.'+os.path.sep) or
+             f_name.startswith('..'+os.path.sep)):
+
+            if make_parents:
+                f_path.parent.mkdir(mode=dir_permission, parents=make_parents, exist_ok=exist_ok)
+            if touch:
+                f_path.touch(mode=permission, exist_ok=exist_ok)
+
+            return pathlib.Path(f_path) if return_pathobj else f_name
+
+        args = list(args)+list(f_path.parts)
+
+        return self.concat_path(key, *args,
+                                make_parents=make_parents,
+                                dir_permission=dir_permission,
+                                exist_ok=exist_ok, touch=touch,
+                                permission=permission,
+                                return_pathobj=return_pathobj)
 
 if __name__ == '__main__':
     import sys

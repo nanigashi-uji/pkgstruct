@@ -155,6 +155,7 @@ os.environ[‘KIVY_HOME’] = pkg_info.concat_path(‘pkg_sysconfdir’, ‘kivy
 
 The above is the code that creates the directory `~/tmp/py_working_tool/etc/py_working_tool/kivy` and sets this directory in the environment variable `'KIVY_HOME'`. 
 
+Another member function `complement(..., filename=, ...)` was implemented to complement the path name only for the given file name is not absolute path. ( i.e. if given starts from '/' or './' or '../', the return value is the given filename. Otherwise the return value is the output of `concat_path(...)`)
 
 ## Author
 
